@@ -4,7 +4,7 @@ import socket
 
 sock = socket.socket()
 host = socket.gethostname()
-port = 8080
+port = 8081
 sock.bind((host, port))
 
 sock.listen(5)
