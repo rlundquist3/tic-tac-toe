@@ -16,6 +16,11 @@ class Grid(Frame):
             print 'Client got:', self.message
             self.icon = self.message
         
+        if self.icon == 'X':
+            self.otherIcon = 'O'
+        else:
+            self.otherIcon = 'X'
+        
         Frame.__init__(self, parent, background='white')
         self.parent = parent
         
@@ -47,7 +52,8 @@ class Grid(Frame):
         print 'Click at', event.x, ',', event.y
         row = event.y/self.dimension
         column = event.x/self.dimension
-        print (row, column)
+        print ('%d %d' %(row, column))
+        self.sock.send('%d %d' %(row, column))
         self.update(row, column, self.icon)
     
     def update(self, row, column, icon):
@@ -61,6 +67,19 @@ class Grid(Frame):
                 print 'winner!'
         
         print 'Used:', self.used
+        
+        if icon == self.icon:
+            self.wait()
+        
+    def wait(self):
+        while True:
+            conn, addr = self.sock.accept()
+            message = conn.recv(1024)
+            if message:
+                print 'Client', self.icon, 'got', message
+                #self.update()
+                break
+    
         
     def checkWin(self, cell):
         #Top row

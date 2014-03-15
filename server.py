@@ -15,11 +15,12 @@ while True:
     message = conn.recv(1024)
     if message:
         print 'Server got:', message
-        conn.send(icon)
-        if icon == 'X':
-            icon = 'O'
-        else:
-            icon = 'X'
+        if message == 'Let me come play!':
+            conn.send(icon)
+            if icon == 'X':
+                icon = 'O'
+            else:
+                icon = 'X'
     #conn.send('Thank you for connecting')
-    conn.close()
+    #conn.close()
 
