@@ -16,18 +16,10 @@ while True:
     if message:
         print 'Server got:', message
         conn.send(icon)
-        icon = 'O'
+        if icon == 'X':
+            icon = 'O'
+        else:
+            icon = 'X'
     #conn.send('Thank you for connecting')
     conn.close()
-    
-'''sock = TicTacToeSocket()
-host = socket.gethostname()
-port = 8080
-sock.bind(host, port)
-
-sock.listen(5)
-while True:
-    conn, addr = sock.accept()
-    conn.send('connection!')
-    conn.close()'''
 
