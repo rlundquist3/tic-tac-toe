@@ -7,13 +7,14 @@ class Grid(Frame):
     def __init__(self, parent):
         self.sock = socket.socket()
         self.host = socket.gethostname()
-        self.port = 8081
-        self.sock.connect((self.host, self.port))
+        self.port = 8080
+        self.sock.connect(('', self.port))
         
         self.sock.send('Let me come play!')
         self.message = self.sock.recv(1024)
         if self.message:
             print 'Client got:', self.message
+            self.icon = self.message
         
         Frame.__init__(self, parent, background='white')
         self.parent = parent
@@ -23,7 +24,6 @@ class Grid(Frame):
         self.used = list()
         for i in range(9):
             self.used.append('n')
-        self.icon = 'X'
         
         self.initUI()
     

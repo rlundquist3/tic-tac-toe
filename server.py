@@ -4,16 +4,19 @@ import socket
 
 sock = socket.socket()
 host = socket.gethostname()
-port = 8081
-sock.bind((host, port))
+port = 8080
+sock.bind(('', port))
 
-sock.listen(5)
+icon = 'X'
+
+sock.listen(2)
 while True:
     conn, addr = sock.accept()
     message = conn.recv(1024)
     if message:
         print 'Server got:', message
-        conn.send(message)
+        conn.send(icon)
+        icon = 'O'
     #conn.send('Thank you for connecting')
     conn.close()
     
