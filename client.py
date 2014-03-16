@@ -75,7 +75,6 @@ class Grid(Frame):
       info = self.sock.recv(self.buf).split()
       print 'Client received:', info
       index = int(info[0])
-      self.turn = True
       self.update(index/3, index%3, info[1])
 
     def update(self, row, column, icon):
@@ -88,8 +87,11 @@ class Grid(Frame):
           if self.checkWin(3*row + column):
               print 'winner!'
 
-      #self.canvas.update_idletasks()
+      self.canvas.update_idletasks()
       print 'Used:', self.used
+
+      if icon != self.icon():
+        self.turn = True
       #mainloop()
 
     def checkWin(self, cell):
