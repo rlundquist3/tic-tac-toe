@@ -53,12 +53,15 @@ class Grid(Frame):
         self.recvMove()
 
     def cellClick(self, event):
+      print 'click'
       if self.turn:
         row = event.y/self.dimension
         column = event.x/self.dimension
         print ('%d %d' %(row, column))
         self.sendMove(3*row + column)
         self.turn = False
+      else:
+        print 'Not your turn!'
 
     def sendMove(self, index):
       self.sock.send('%d %s' %(index, self.icon))
@@ -72,8 +75,8 @@ class Grid(Frame):
       info = self.sock.recv(self.buf).split()
       print 'Client received:', info
       index = int(info[0])
-      self.update(index/3, index%3, info[1])
       self.turn = True
+      self.update(index/3, index%3, info[1])
 
     def update(self, row, column, icon):
       x = column*self.dimension + self.dimension/2
@@ -85,8 +88,9 @@ class Grid(Frame):
           if self.checkWin(3*row + column):
               print 'winner!'
 
-      self.canvas.update_idletasks()
+      #self.canvas.update_idletasks()
       print 'Used:', self.used
+      #mainloop()
 
     def checkWin(self, cell):
       #Top row
