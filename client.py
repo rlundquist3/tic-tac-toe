@@ -8,7 +8,7 @@ class Grid(Frame):
         self.sock = socket.socket()
         self.host = ''
         self.buf = 1024
-        self.port = 8080
+        self.port = 8888
         self.sock.connect((self.host, self.port))
 
         self.sock.send('Let me come play!')
