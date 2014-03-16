@@ -60,7 +60,12 @@ class Grid(Frame):
     def sendWait(self, index):
         self.sock.send('%d %s' %(index, self.icon))
         info = self.sock.recv(self.buf).split()
-        print 'Client got:', info
+        print 'Client received:', info
+        index = int(info[0])
+        self.update(index/3, index%3, info[1])
+
+        info = self.sock.recv(self.buf).split()
+        print 'Client received:', info
         index = int(info[0])
         self.update(index/3, index%3, info[1])
 
@@ -70,7 +75,7 @@ class Grid(Frame):
 
         if self.used[3*row + column] == 'n':
             self.canvas.create_text(x, y, text=icon)
-            self.used[3*row + column] = self.icon
+            self.used[3*row + column] = icon
             if self.checkWin(3*row + column):
                 print 'winner!'
 
