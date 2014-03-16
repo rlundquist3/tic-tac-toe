@@ -7,11 +7,12 @@ class Grid(Frame):
     def __init__(self, parent):
         self.sock = socket.socket()
         self.host = socket.gethostname()
+        self.buf = 1024
         self.port = 8080
         self.sock.connect(('', self.port))
         
         self.sock.send('Let me come play!')
-        self.message = self.sock.recv(1024)
+        self.message = self.sock.recv(self.buf)
         if self.message:
             print 'Client got:', self.message
             self.icon = self.message
@@ -53,8 +54,15 @@ class Grid(Frame):
         row = event.y/self.dimension
         column = event.x/self.dimension
         print ('%d %d' %(row, column))
-        self.sock.send('%d %d' %(row, column))
-        self.update(row, column, self.icon)
+        self.sendWait(3*row + column)
+        #self.update(row, column, self.icon)
+    
+    def sendWait(self, index):
+        self.sock.send('%d %s' %(index, self.icon))
+        info = self.sock.recv(self.buf).split()
+        print 'Client got:', info
+        index = int(info[0])
+        self.update(index/3, index%3, info[1])
     
     def update(self, row, column, icon):
         x = column*self.dimension + self.dimension/2
@@ -66,20 +74,7 @@ class Grid(Frame):
             if self.checkWin(3*row + column):
                 print 'winner!'
         
-        print 'Used:', self.used
-        
-        if icon == self.icon:
-            self.wait()
-        
-    def wait(self):
-        while True:
-            conn, addr = self.sock.accept()
-            message = conn.recv(1024)
-            if message:
-                print 'Client', self.icon, 'got', message
-                #self.update()
-                break
-    
+        print 'Used:', self.used    
         
     def checkWin(self, cell):
         #Top row
