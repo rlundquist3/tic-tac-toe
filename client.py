@@ -17,11 +17,6 @@ class Grid(Frame):
             print 'Client got:', self.message
             self.icon = self.message
 
-        if self.icon == 'X':
-            self.otherIcon = 'O'
-        else:
-            self.otherIcon = 'X'
-
         Frame.__init__(self, parent, background='white')
         self.parent = parent
 
@@ -32,6 +27,9 @@ class Grid(Frame):
             self.used.append('n')
 
         self.initUI()
+        
+        if self.icon == 'O':
+          self.recvMove()
 
     def initUI(self):
         self.parent.title('Tic-Tac-Toe')
@@ -54,16 +52,17 @@ class Grid(Frame):
         row = event.y/self.dimension
         column = event.x/self.dimension
         print ('%d %d' %(row, column))
-        self.sendWait(3*row + column)
-        #self.update(row, column, self.icon)
+        self.sendMove(3*row + column)
 
-    def sendWait(self, index):
+    def sendMove(self, index):
         self.sock.send('%d %s' %(index, self.icon))
         info = self.sock.recv(self.buf).split()
         print 'Client received:', info
         index = int(info[0])
         self.update(index/3, index%3, info[1])
+        self.recvMove()
 
+    def recvMove(self):
         info = self.sock.recv(self.buf).split()
         print 'Client received:', info
         index = int(info[0])
