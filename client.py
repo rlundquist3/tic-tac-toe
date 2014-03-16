@@ -54,14 +54,10 @@ class Grid(Frame):
 
     def cellClick(self, event):
       print 'click'
-      if self.turn:
-        row = event.y/self.dimension
-        column = event.x/self.dimension
-        print ('%d %d' %(row, column))
-        self.sendMove(3*row + column)
-        self.turn = False
-      else:
-        print 'Not your turn!'
+      row = event.y/self.dimension
+      column = event.x/self.dimension
+      print ('%d %d' %(row, column))
+      self.sendMove(3*row + column)
 
     def sendMove(self, index):
       self.sock.send('%d %s' %(index, self.icon))
@@ -90,9 +86,8 @@ class Grid(Frame):
       self.canvas.update_idletasks()
       print 'Used:', self.used
 
-      if icon != self.icon():
+      if icon != self.icon:
         self.turn = True
-      #mainloop()
 
     def checkWin(self, cell):
       #Top row
