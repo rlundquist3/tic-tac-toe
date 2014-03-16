@@ -4,7 +4,7 @@ import socket
 import thread
 import time
 
-def newThread(icon):
+def newThread(conn, icon):
   print '%s thread started' %icon
   conn.send(icon)
   players[icon] = conn
@@ -34,7 +34,7 @@ players = {}
 sock.listen(2)
 while True:
     conn, addr = sock.accept()
-    thread.start_new_thread(newThread, (icon,))
+    thread.start_new_thread(newThread, (conn, icon))
     if icon == 'X':
         icon = 'O'
     else:
