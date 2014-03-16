@@ -2,6 +2,7 @@
 
 import socket
 import thread
+import time
 
 def newThread(icon):
   print '%s thread started' %icon
@@ -14,6 +15,8 @@ def newThread(icon):
     print '%s thread received: %s' %(icon, message)
     if message != 'Let me come play!':
       broadcast(message)
+    time.sleep(10)
+    print '%s thread listening' %icon
 
 def broadcast(info):
   print 'broadcast %s' %info
