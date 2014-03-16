@@ -60,6 +60,7 @@ class Grid(Frame):
       self.sendMove(3*row + column)
 
     def sendMove(self, index):
+      print 'sending'
       self.sock.send('%d %s' %(index, self.icon))
       info = self.sock.recv(self.buf).split()
       print 'Client received:', info
@@ -68,6 +69,7 @@ class Grid(Frame):
       self.recvMove()
 
     def recvMove(self):
+      print 'listening'
       info = self.sock.recv(self.buf).split()
       print 'Client received:', info
       index = int(info[0])
