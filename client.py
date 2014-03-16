@@ -6,37 +6,37 @@ from Tkinter import Tk, Frame, BOTH, Canvas
 class Grid(Frame):
     def __init__(self, parent):
         self.sock = socket.socket()
-        self.host = socket.gethostname()
+        self.host = ''
         self.buf = 1024
         self.port = 8080
-        self.sock.connect(('', self.port))
-        
+        self.sock.connect((self.host, self.port))
+
         self.sock.send('Let me come play!')
         self.message = self.sock.recv(self.buf)
         if self.message:
             print 'Client got:', self.message
             self.icon = self.message
-        
+
         if self.icon == 'X':
             self.otherIcon = 'O'
         else:
             self.otherIcon = 'X'
-        
+
         Frame.__init__(self, parent, background='white')
         self.parent = parent
-        
+
         self.dimension = 100
         self.cells = {}
         self.used = list()
         for i in range(9):
             self.used.append('n')
-        
+
         self.initUI()
-    
+
     def initUI(self):
         self.parent.title('Tic-Tac-Toe')
         self.pack(fill=BOTH, expand=1)
-        
+
         self.canvas = Canvas(self)
         for row in range(3):
             for column in range(3):
@@ -46,9 +46,9 @@ class Grid(Frame):
                 y2 = y1 + self.dimension
                 self.cells[row, column] = self.canvas.create_rectangle(x1, y1, x2, y2, outline='#000')
                 self.canvas.bind('<ButtonRelease-1>', self.cellClick)
-        
+
         self.canvas.pack(fill=BOTH, expand=1)
-        
+
     def cellClick(self, event):
         print 'Click at', event.x, ',', event.y
         row = event.y/self.dimension
@@ -56,26 +56,26 @@ class Grid(Frame):
         print ('%d %d' %(row, column))
         self.sendWait(3*row + column)
         #self.update(row, column, self.icon)
-    
+
     def sendWait(self, index):
         self.sock.send('%d %s' %(index, self.icon))
         info = self.sock.recv(self.buf).split()
         print 'Client got:', info
         index = int(info[0])
         self.update(index/3, index%3, info[1])
-    
+
     def update(self, row, column, icon):
         x = column*self.dimension + self.dimension/2
         y = row*self.dimension + self.dimension/2
-        
+
         if self.used[3*row + column] == 'n':
             self.canvas.create_text(x, y, text=icon)
             self.used[3*row + column] = self.icon
             if self.checkWin(3*row + column):
                 print 'winner!'
-        
-        print 'Used:', self.used    
-        
+
+        print 'Used:', self.used
+
     def checkWin(self, cell):
         #Top row
         if cell <= 2:
@@ -117,16 +117,16 @@ class Grid(Frame):
             if self.used[2] == self.used[4] and self.used[2] == self.used[6]:
                 print 'top-right diagonal win'
                 return True
-    
+
 
 def main():
-    
+
     root = Tk()
     root.geometry('300x300+300+300')
     app = Grid(root)
     root.mainloop()
-    
+
     app.sock.close()
-    
+
 if __name__ == '__main__':
     main()
