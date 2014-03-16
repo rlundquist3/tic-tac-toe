@@ -26,10 +26,12 @@ class Grid(Frame):
         for i in range(9):
             self.used.append('n')
 
+        if self.icon == 'X':
+          self.turn = True
+        else:
+          self.turn = False
+
         self.initUI()
-        
-        if self.icon == 'O':
-          self.recvMove()
 
     def initUI(self):
         self.parent.title('Tic-Tac-Toe')
@@ -47,26 +49,32 @@ class Grid(Frame):
 
         self.canvas.pack(fill=BOTH, expand=1)
 
+        if self.icon == 'O':
+          self.recvMove()
+
     def cellClick(self, event):
+      if self.turn:
         print 'Click at', event.x, ',', event.y
         row = event.y/self.dimension
         column = event.x/self.dimension
         print ('%d %d' %(row, column))
         self.sendMove(3*row + column)
+        self.turn = False
 
     def sendMove(self, index):
-        self.sock.send('%d %s' %(index, self.icon))
-        info = self.sock.recv(self.buf).split()
-        print 'Client received:', info
-        index = int(info[0])
-        self.update(index/3, index%3, info[1])
-        self.recvMove()
+      self.sock.send('%d %s' %(index, self.icon))
+      info = self.sock.recv(self.buf).split()
+      print 'Client received:', info
+      index = int(info[0])
+      self.update(index/3, index%3, info[1])
+      self.recvMove()
 
     def recvMove(self):
-        info = self.sock.recv(self.buf).split()
-        print 'Client received:', info
-        index = int(info[0])
-        self.update(index/3, index%3, info[1])
+      info = self.sock.recv(self.buf).split()
+      print 'Client received:', info
+      index = int(info[0])
+      self.update(index/3, index%3, info[1])
+      self.turn = True
 
     def update(self, row, column, icon):
         x = column*self.dimension + self.dimension/2
