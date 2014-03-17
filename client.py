@@ -155,11 +155,11 @@ class Grid(Frame):
         self.markWin(winCells)
         self.endGame(self.used[cell])
 
-    def markWin(cells):
-      for cell in cells:
-        self.canvas.itemconfigure(self.cells[cell/3, cell%3], fill = '#219c4e')
+    def markWin(self, *winCells):
+      for cell in winCells:
+        self.canvas.itemconfigure(self.cells[int(cell)/3, int(cell)%3], fill = '#219c4e')
 
-    def endGame(winningIcon):
+    def endGame(self, winningIcon):
       tkMessageBox.showInfo('Game Over!', 'Player %s wins!' %winningIcon)
       self.sock.close()
 
