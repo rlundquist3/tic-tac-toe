@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import socket
-from Tkinter import Tk, Frame, BOTH, Canvas
+from Tkinter import Tk, Frame, BOTH, Canvas, tkMessageBox
 
 class Grid(Frame):
     def __init__(self, parent):
@@ -44,7 +44,7 @@ class Grid(Frame):
           y1 = row*self.dimension
           x2 = x1 + self.dimension
           y2 = y1 + self.dimension
-          self.cells[row, column] = self.canvas.create_rectangle(x1, y1, x2, y2, outline='#000')
+          self.cells[row, column] = self.canvas.create_rectangle(x1, y1, x2, y2, outline='#2c1975')
           self.canvas.bind('<ButtonRelease-1>', self.cellClick)
 
       self.canvas.pack(fill=BOTH, expand=1)
@@ -80,7 +80,7 @@ class Grid(Frame):
       y = row*self.dimension + self.dimension/2
 
       if self.used[3*row + column] == 'n':
-        self.canvas.create_text(x, y, text=icon)
+        self.canvas.create_text(x, y, text=icon, fill='#2c1975', font='Verdana 18 bold italic')
         self.used[3*row + column] = icon
         self.checkWin(3*row + column)
 
@@ -91,47 +91,68 @@ class Grid(Frame):
         self.turn = True
 
     def checkWin(self, cell):
+      win = False
       #Top row
       if cell <= 2:
         if self.used[0] == self.used[1] and self.used[0] == self.used[2]:
           print 'top row win'
-          self.canvas.itemconfigure(self.cells[0, 0], fill = 'green')
-          return True
+          self.markWin((0, 1, 2))
+          win = True
       #Middle row
       if cell >= 3 and cell <=5:
         if self.used[3] == self.used[4] and self.used[3] == self.used[5]:
           print 'middle row win'
-          return True
+          self.markWin((3, 4, 5))
+          win = True
       #Bottom row
       if cell >= 6:
         if self.used[6] == self.used[7] and self.used[6] == self.used[8]:
           print 'bottom row win'
-          return True
+          self.markWin((6, 7, 8))
+          win = True
       #Left column
       if cell%3 == 0:
         if self.used[0] == self.used[3] and self.used[0] == self.used[6]:
           print 'left column win'
-          return True
+          self.markWin((0, 3, 6))
+          win = True
       #Middle column
       if cell%3 == 1:
         if self.used[1] == self.used[4] and self.used[1] == self.used[7]:
           print 'middle column win'
-          return True
+          self.markWin((1, 4, 7))
+          win = True
       #Right column
       if cell%3 == 2:
         if self.used[2] == self.used[5] and self.used[2] == self.used[8]:
           print 'right column win'
-          return True
+          self.markWin((2, 5, 8))
+          win = True
       #Top-left diagonal
       if cell%4 == 0:
         if self.used[0] == self.used[4] and self.used[0] == self.used[8]:
           print 'top-left diagonal win'
-          return True
+          self.markWin((0, 4, 8))
+          win = True
       #Top-right diagonal
       if cell == 2 or cell == 4 or cell == 6:
         if self.used[2] == self.used[4] and self.used[2] == self.used[6]:
           print 'top-right diagonal win'
-          return True
+          self.markWin((2, 4, 6))
+          win = True
+
+      if win:
+        self.endGame(self.used[cell])
+
+    def markWin(cells):
+      if self.dialogShown == False:
+        self.dialogShown == True
+      for cell in cells:
+        self.canvas.itemconfigure(self.cells[cell/3, cell%3], fill = '#219c4e')
+
+    def endGame(winningIcon):
+      tkMessageBox.showInfo('Game Over!', 'Player %s wins!' %winningIcon)
+      self.sock.close()
 
 
 def main():
