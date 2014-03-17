@@ -39,23 +39,5 @@ while True:
         icon = 'O'
     else:
         icon = 'X'
-
-    '''for name, conn in players.items():
-      message = conn.recv(buf)
-      print 'server received: %s' %message
-      if message:
-        broadcast(message)'''
-    '''while True:
-        message = conn.recv(buf)
-        if message:
-            print 'Server got:', message
-            if message == 'Let me come play!':
-                conn.send(icon)
-                if icon == 'X':
-                    icon = 'O'
-                else:
-                    icon = 'X'
-            else:
-                conn.send(message)'''
     #conn.send('Thank you for connecting')
     #conn.close()
