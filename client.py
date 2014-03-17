@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 import socket
-from Tkinter import Tk, Frame, BOTH, Canvas, tkMessageBox
+from Tkinter import Tk, Frame, BOTH, Canvas
+import tkMessageBox
 
 class Grid(Frame):
     def __init__(self, parent):
@@ -92,61 +93,69 @@ class Grid(Frame):
 
     def checkWin(self, cell):
       win = False
+      winCells = list()
       #Top row
       if cell <= 2:
         if self.used[0] == self.used[1] and self.used[0] == self.used[2]:
           print 'top row win'
-          self.markWin((0, 1, 2))
+          for i in range(3):
+            winCells.append(i)
           win = True
       #Middle row
       if cell >= 3 and cell <=5:
         if self.used[3] == self.used[4] and self.used[3] == self.used[5]:
           print 'middle row win'
-          self.markWin((3, 4, 5))
+          for i in range(3, 6):
+            winCells.append(i)
           win = True
       #Bottom row
       if cell >= 6:
         if self.used[6] == self.used[7] and self.used[6] == self.used[8]:
           print 'bottom row win'
-          self.markWin((6, 7, 8))
+          for i in range(6, 9):
+            winCells.append(i)
           win = True
       #Left column
       if cell%3 == 0:
         if self.used[0] == self.used[3] and self.used[0] == self.used[6]:
           print 'left column win'
-          self.markWin((0, 3, 6))
+          for i in range(0, 7, 3):
+            winCells.append(i)
           win = True
       #Middle column
       if cell%3 == 1:
         if self.used[1] == self.used[4] and self.used[1] == self.used[7]:
           print 'middle column win'
-          self.markWin((1, 4, 7))
+          for i in range(1, 8, 3):
+            winCells.append(i)
           win = True
       #Right column
       if cell%3 == 2:
         if self.used[2] == self.used[5] and self.used[2] == self.used[8]:
           print 'right column win'
-          self.markWin((2, 5, 8))
+          for i in range(2, 9, 3):
+            winCells.append(i)
           win = True
       #Top-left diagonal
       if cell%4 == 0:
         if self.used[0] == self.used[4] and self.used[0] == self.used[8]:
           print 'top-left diagonal win'
-          self.markWin((0, 4, 8))
+          for i in range(0, 9, 4):
+            winCells.append(i)
           win = True
       #Top-right diagonal
       if cell == 2 or cell == 4 or cell == 6:
         if self.used[2] == self.used[4] and self.used[2] == self.used[6]:
           print 'top-right diagonal win'
-          self.markWin((2, 4, 6))
+          for i in range(2, 7, 2):
+            winCells.append(i)
           win = True
 
       if win:
+        self.markWin(winCells)
         self.endGame(self.used[cell])
 
     def markWin(cells):
-      if self.dialogShown == False:
-        self.dialogShown == True
       for cell in cells:
         self.canvas.itemconfigure(self.cells[cell/3, cell%3], fill = '#219c4e')
 
