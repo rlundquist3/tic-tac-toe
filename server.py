@@ -15,12 +15,7 @@ def newThread(conn, icon):
     print '%s thread received: %s' %(icon, message)
     if message != 'Let me come play!':
       info = '%s %f' %(message, time.time())
-      print 'icon: %s, last: %s' %(icon, last)
-      if icon != last:
-        broadcast(info)
-        print 'sent'
-      else:
-        print 'not sent'
+      broadcast(info)
 
 def broadcast(info):
   print 'broadcast %s' %info
@@ -34,7 +29,6 @@ port = 8888
 sock.bind((host, port))
 icon = 'X'
 players = {}
-last = ''
 
 sock.listen(2)
 while True:

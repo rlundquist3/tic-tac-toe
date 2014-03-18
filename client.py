@@ -70,38 +70,35 @@ class Grid(Frame):
       self.sock.send('%d %s' %(index, self.icon))
       info = self.sock.recv(self.buf).split()
       print 'Client received:', info
-      if float(info[2]) - float(self.lastTimestamp) > 2:
-        index = int(info[0])
-        self.lastTimestamp = info[2]
-        self.update(index/3, index%3, info[1], info[2])
-        self.recvMove()
-      else:
-        self.lastTimestamp = info[2]
-        print 'not using received'
+      index = int(info[0])
+      self.update(index/3, index%3, info[1], info[2])
 
     def recvMove(self):
       print 'listening'
       info = self.sock.recv(self.buf).split()
       print 'Client received:', info
-      if float(info[2]) - float(self.lastTimestamp) > 2:
-        index = int(info[0])
-        self.lastTimestamp = info[2]
-        self.update(index/3, index%3, info[1], info[2])
-      else:
-        self.lastTimestamp = info[2]
-        print 'not using received'
+      index = int(info[0])
+      self.update(index/3, index%3, info[1], info[2])
 
     def update(self, row, column, icon, timestamp):
-      x = column*self.dimension + self.dimension/2
-      y = row*self.dimension + self.dimension/2
+      if timestamp - self.lastTimestamp > 2:
+        x = column*self.dimension + self.dimension/2
+        y = row*self.dimension + self.dimension/2
 
-      if self.used[3*row + column] == 'n':
-        self.canvas.create_text(x, y, text=icon, fill=self.purple, font='Verdana 18 bold italic')
-        self.used[3*row + column] = icon
-        self.checkWin(3*row + column)
+        if self.used[3*row + column] == 'n':
+          self.canvas.create_text(x, y, text=icon, fill=self.purple, font='Verdana 18 bold italic')
+          self.used[3*row + column] = icon
+          self.checkWin(3*row + column)
 
-      self.canvas.update_idletasks()
-      print 'Used:', self.used
+        self.canvas.update_idletasks()
+        print 'Used:', self.used
+
+        if self.icon == icon:
+          print 'was my move...now waiting'
+          self.recvMove()
+      else:
+        print 'not updating'
+      self.lastTimestamp = timestamp
       print 'time: %s' %self.lastTimestamp
 
     def checkWin(self, cell):
