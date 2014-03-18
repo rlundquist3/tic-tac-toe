@@ -81,7 +81,7 @@ class Grid(Frame):
       self.update(index/3, index%3, info[1], info[2])
 
     def update(self, row, column, icon, timestamp):
-      if timestamp - self.lastTimestamp > 2:
+      if float(timestamp) - self.lastTimestamp > 2:
         x = column*self.dimension + self.dimension/2
         y = row*self.dimension + self.dimension/2
 
@@ -93,13 +93,16 @@ class Grid(Frame):
         self.canvas.update_idletasks()
         print 'Used:', self.used
 
+        self.lastTimestamp = float(timestamp)
+        print 'time: %s' %self.lastTimestamp
+        
         if self.icon == icon:
           print 'was my move...now waiting'
           self.recvMove()
       else:
         print 'not updating'
-      self.lastTimestamp = timestamp
-      print 'time: %s' %self.lastTimestamp
+        self.lastTimestamp = float(timestamp)
+        print 'time: %s' %self.lastTimestamp
 
     def checkWin(self, cell):
       win = False
