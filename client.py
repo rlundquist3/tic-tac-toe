@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import socket
-import thread
 from Tkinter import Tk, Frame, BOTH, Canvas
 import tkMessageBox
 
@@ -30,8 +29,7 @@ class Grid(Frame):
       self.used = list()
       for i in range(9):
           self.used.append('n')
-
-      self.lock = thread.allocate_lock()
+      
       self.lastTimestamp = 0
 
       if self.icon == 'X':
@@ -72,10 +70,10 @@ class Grid(Frame):
       self.sock.send('%d %s' %(index, self.icon))
       info = self.sock.recv(self.buf).split()
       print 'Client received:', info
-      if float(info[3]) - self.lastTimestamp > 2:
+      if float(info[2]) - float(self.lastTimestamp) > 2:
         index = int(info[0])
         #self.canvas.unbind('<ButtonRelease-1>', self.clickId)
-        self.update(index/3, index%3, info[1], info[3])
+        self.update(index/3, index%3, info[1], info[2])
         self.recvMove()
       else:
         print 'not using received'
@@ -84,9 +82,12 @@ class Grid(Frame):
       print 'listening'
       info = self.sock.recv(self.buf).split()
       print 'Client received:', info
-      index = int(info[0])
-      self.update(index/3, index%3, info[1], info[3])
-      #self.clickId = self.canvas.bind('<ButtonRelease-1>', self.cellClick)
+      if float(info[2]) - float(self.lastTimestamp) > 2:
+        index = int(info[0])
+        self.update(index/3, index%3, info[1], info[2])
+        #self.clickId = self.canvas.bind('<ButtonRelease-1>', self.cellClick)
+      else:
+        print 'not using received'
 
     def update(self, row, column, icon, timestamp):
       x = column*self.dimension + self.dimension/2
@@ -94,7 +95,6 @@ class Grid(Frame):
 
       if self.used[3*row + column] == 'n':
         self.canvas.create_text(x, y, text=icon, fill=self.purple, font='Verdana 18 bold italic')
-        self.cellsUsed += 1
         self.used[3*row + column] = icon
         self.checkWin(3*row + column)
 

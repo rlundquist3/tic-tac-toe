@@ -14,8 +14,8 @@ def newThread(conn, icon):
     message = conn.recv(buf)
     print '%s thread received: %s' %(icon, message)
     if message != 'Let me come play!':
-      info = '%s %f' %(message, time.time()))
-      broadcast(message)
+      info = '%s %f' %(message, time.time())
+      broadcast(info)
 
 def broadcast(info):
   print 'broadcast %s' %info
