@@ -95,7 +95,7 @@ class Grid(Frame):
 
         self.lastTimestamp = float(timestamp)
         print 'time: %s' %self.lastTimestamp
-        
+
         if self.icon == icon:
           print 'was my move...now waiting'
           self.recvMove()
@@ -103,6 +103,8 @@ class Grid(Frame):
         print 'not updating'
         self.lastTimestamp = float(timestamp)
         print 'time: %s' %self.lastTimestamp
+        if self.icon != icon:
+          self.recvMove()
 
     def checkWin(self, cell):
       win = False
