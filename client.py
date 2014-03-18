@@ -29,7 +29,7 @@ class Grid(Frame):
       self.used = list()
       for i in range(9):
           self.used.append('n')
-      
+
       self.lastTimestamp = 0
 
       if self.icon == 'X':
@@ -72,10 +72,11 @@ class Grid(Frame):
       print 'Client received:', info
       if float(info[2]) - float(self.lastTimestamp) > 2:
         index = int(info[0])
-        #self.canvas.unbind('<ButtonRelease-1>', self.clickId)
+        self.lastTimestamp = info[2]
         self.update(index/3, index%3, info[1], info[2])
         self.recvMove()
       else:
+        self.lastTimestamp = info[2]
         print 'not using received'
 
     def recvMove(self):
@@ -84,9 +85,10 @@ class Grid(Frame):
       print 'Client received:', info
       if float(info[2]) - float(self.lastTimestamp) > 2:
         index = int(info[0])
+        self.lastTimestamp = info[2]
         self.update(index/3, index%3, info[1], info[2])
-        #self.clickId = self.canvas.bind('<ButtonRelease-1>', self.cellClick)
       else:
+        self.lastTimestamp = info[2]
         print 'not using received'
 
     def update(self, row, column, icon, timestamp):
@@ -98,7 +100,6 @@ class Grid(Frame):
         self.used[3*row + column] = icon
         self.checkWin(3*row + column)
 
-      self.lastTimestamp = timestamp
       self.canvas.update_idletasks()
       print 'Used:', self.used
       print 'time: %s' %self.lastTimestamp
