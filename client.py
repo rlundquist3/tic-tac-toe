@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import socket
+import thread
 from Tkinter import Tk, Frame, BOTH, Canvas
 import tkMessageBox
 
@@ -11,6 +12,9 @@ class Grid(Frame):
       self.buf = 1024
       self.port = 8888
       self.sock.connect((self.host, self.port))
+
+      self.purple = '#130d38'
+      self.green = '#239d60'
 
       self.sock.send('Let me come play!')
       self.message = self.sock.recv(self.buf)
@@ -26,6 +30,9 @@ class Grid(Frame):
       self.used = list()
       for i in range(9):
           self.used.append('n')
+
+      self.lock = thread.allocate_lock()
+      self.lastTimestamp = 0
 
       if self.icon == 'X':
         self.turn = True
@@ -45,8 +52,8 @@ class Grid(Frame):
           y1 = row*self.dimension
           x2 = x1 + self.dimension
           y2 = y1 + self.dimension
-          self.cells[row, column] = self.canvas.create_rectangle(x1, y1, x2, y2, outline='#2c1975')
-          self.canvas.bind('<ButtonRelease-1>', self.cellClick)
+          self.cells[row, column] = self.canvas.create_rectangle(x1, y1, x2, y2, outline=self.purple)
+          self.clickId = self.canvas.bind('<ButtonRelease-1>', self.cellClick)
 
       self.canvas.pack(fill=BOTH, expand=1)
 
@@ -65,31 +72,36 @@ class Grid(Frame):
       self.sock.send('%d %s' %(index, self.icon))
       info = self.sock.recv(self.buf).split()
       print 'Client received:', info
-      index = int(info[0])
-      self.update(index/3, index%3, info[1])
-      self.recvMove()
+      if float(info[3]) - self.lastTimestamp > 2:
+        index = int(info[0])
+        #self.canvas.unbind('<ButtonRelease-1>', self.clickId)
+        self.update(index/3, index%3, info[1], info[3])
+        self.recvMove()
+      else:
+        print 'not using received'
 
     def recvMove(self):
       print 'listening'
       info = self.sock.recv(self.buf).split()
       print 'Client received:', info
       index = int(info[0])
-      self.update(index/3, index%3, info[1])
+      self.update(index/3, index%3, info[1], info[3])
+      #self.clickId = self.canvas.bind('<ButtonRelease-1>', self.cellClick)
 
-    def update(self, row, column, icon):
+    def update(self, row, column, icon, timestamp):
       x = column*self.dimension + self.dimension/2
       y = row*self.dimension + self.dimension/2
 
       if self.used[3*row + column] == 'n':
-        self.canvas.create_text(x, y, text=icon, fill='#2c1975', font='Verdana 18 bold italic')
+        self.canvas.create_text(x, y, text=icon, fill=self.purple, font='Verdana 18 bold italic')
+        self.cellsUsed += 1
         self.used[3*row + column] = icon
         self.checkWin(3*row + column)
 
+      self.lastTimestamp = timestamp
       self.canvas.update_idletasks()
       print 'Used:', self.used
-
-      if icon != self.icon:
-        self.turn = True
+      print 'time: %s' %self.lastTimestamp
 
     def checkWin(self, cell):
       win = False
@@ -161,7 +173,7 @@ class Grid(Frame):
       print cellList
       for cell in cellList:
         print cell
-        self.canvas.itemconfigure(self.cells[cell/3, cell%3], fill = '#249f49')
+        self.canvas.itemconfigure(self.cells[cell/3, cell%3], fill=self.green)
 
     def endGame(self, winningIcon):
       tkMessageBox.showinfo('Game Over!', 'Player %s wins!' %winningIcon)
