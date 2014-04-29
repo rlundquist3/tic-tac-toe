@@ -12,10 +12,14 @@ The clients get their icon (X or O) from the server when they connect. They then
 Running the program:
 On the server machine, run
 	python server.py &
+
 Open one client on the same machine with
 	python client.py
+
 Connect to the server machine with the second machine
 	ssh <server> -L 8888:localhost:8888
+
 And open the client on that machine with
 	python client.py localhost:8888
+
 Clients may connect in any order, but whichever connects first will have the first move.
